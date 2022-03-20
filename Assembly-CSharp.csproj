@@ -52,7 +52,6 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\TransformationMatrixUtil.cs" />
      <Compile Include="Assets\Scripts\DrawingGPUInstanceMeshSquareArray.cs" />
      <Compile Include="Assets\Scripts\SimpleCameraController.cs" />
      <None Include="Assets\Scripts\ComputeCullingUpdate.compute" />
