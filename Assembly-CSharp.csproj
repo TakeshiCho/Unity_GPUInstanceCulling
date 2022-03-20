@@ -55,7 +55,7 @@
      <Compile Include="Assets\Scripts\DrawingGPUInstanceMeshSquareArray.cs" />
      <Compile Include="Assets\Scripts\SimpleCameraController.cs" />
      <None Include="Assets\Scripts\ComputeCullingUpdate.compute" />
-     <None Include="Assets\Scripts\SquareArrayColor.shader" />
+     <None Include="Assets\Scripts\MeshArrayColor.shader" />
      <None Include="Assets\Scripts\ComputeMeshArrayInclude.hlsl" />
  <Reference Include="UnityEngine">
  <HintPath>D:/Programs/2020.3.21f1c1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>

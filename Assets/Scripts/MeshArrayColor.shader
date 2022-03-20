@@ -1,4 +1,4 @@
-﻿Shader "GPU_Instance/SquareArrayColor"
+﻿Shader "GPU_Instance/MeshArrayColor"
 {
     Properties
     {
