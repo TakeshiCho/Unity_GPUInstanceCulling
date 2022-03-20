@@ -1,0 +1,64 @@
+#pragma kernel ComputeIndex2D
+#pragma kernel ComputeMeshData
+#pragma kernel ComputeCullingUpdate
+
+#include "ComputeMeshArrayInclude.hlsl"
+
+struct Thread
+{
+    uint id : SV_DispatchThreadID;
+};
+
+RWStructuredBuffer<float2> Index2D;
+RWStructuredBuffer<MeshArrayData> OringinalDataBuffer;
+AppendStructuredBuffer<MeshArrayData> DistanceCullBuffer;
+
+uint _Length;
+float _Interval;
+float4 _CameraPosition;
+float _CullingDistacne;
+bool _IsCheckPosition;
+
+[numthreads(16,1,1)]
+void ComputeIndex2D(Thread thread)
+{
+    uint id = thread.id;
+    Index2D[id] = Index_to_Index2D(id,_Length);
+}
+
+[numthreads(16,1,1)]
+void ComputeMeshData(Thread thread)
+{
+    uint id = thread.id;
+    float2 id_2D = Index2D[id];
+    float2 pos = (id_2D - _Length * 0.5 + 0.5) * _Interval;
+    OringinalDataBuffer[id].Position = float3(pos.x,0,pos.y);
+    
+    if (!_IsCheckPosition)
+        OringinalDataBuffer[id].Color = float4(id_2D.x,id_2D.y,0,1)/_Length;
+    else
+        OringinalDataBuffer[id].Color = float4(Random(id_2D.x * id_2D.y * (1-0.008)),Random(id_2D.x * id_2D.y * 0.008),Random(id+2),1);
+    
+}
+
+[numthreads(16,1,1)]
+void ComputeCullingUpdate(Thread thread) 
+{
+    uint id = thread.id;
+    float2 id_2D = Index2D[id]; 
+    float3 pos = OringinalDataBuffer[id].Position;
+    float distance = length(abs(pos - _CameraPosition.xyz));
+    
+    if (distance > _CullingDistacne + 150)
+        return;
+    if(distance > _CullingDistacne + 50)
+        if((uint)id_2D.x%4 != 0 || (uint)id_2D.y%4 != 0)
+            return;  
+    if(distance > _CullingDistacne)
+        if((uint)id_2D.x%2 != 0 || (uint)id_2D.y%2 != 0)
+            return;
+    
+    DistanceCullBuffer.Append(OringinalDataBuffer[id]);
+}
+
+
