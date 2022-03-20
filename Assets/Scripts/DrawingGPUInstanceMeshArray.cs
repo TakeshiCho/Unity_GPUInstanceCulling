@@ -5,7 +5,7 @@ using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
 
-public class DrawingGPUInstanceMeshSquareArray : MonoBehaviour
+public class DrawingGPUInstanceMeshArray : MonoBehaviour
 {
 
     public ComputeShader computeShader;

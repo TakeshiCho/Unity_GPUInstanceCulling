@@ -52,9 +52,9 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\DrawingGPUInstanceMeshSquareArray.cs" />
+     <Compile Include="Assets\Scripts\DrawingGPUInstanceMeshArray.cs" />
      <Compile Include="Assets\Scripts\SimpleCameraController.cs" />
-     <None Include="Assets\Scripts\ComputeCullingUpdate.compute" />
+     <None Include="Assets\Scripts\ComputeMeshArray.compute" />
      <None Include="Assets\Scripts\MeshArrayColor.shader" />
      <None Include="Assets\Scripts\ComputeMeshArrayInclude.hlsl" />
  <Reference Include="UnityEngine">
