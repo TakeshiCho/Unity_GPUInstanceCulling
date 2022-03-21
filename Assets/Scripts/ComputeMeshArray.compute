@@ -34,7 +34,7 @@ void ComputeMeshData(Thread thread)
     float2 pos = (id_2D - _Length * 0.5 + 0.5) * _Interval;
     OringinalDataBuffer[id].Position = float3(pos.x,0,pos.y);
     
-    if (!_IsCheckPosition)
+    if (_IsCheckPosition)
         OringinalDataBuffer[id].Color = float4(id_2D.x,id_2D.y,0,1)/_Length;
     else
         OringinalDataBuffer[id].Color = float4(Random(id_2D.x * id_2D.y * (1-0.008)),Random(id_2D.x * id_2D.y * 0.008),Random(id+2),1);
