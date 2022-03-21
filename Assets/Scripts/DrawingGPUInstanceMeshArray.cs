@@ -53,7 +53,7 @@ public class DrawingGPUInstanceMeshArray : MonoBehaviour
         public ComputeBuffer Index2D;
         public ComputeBuffer ArgBuffer;
         public ComputeBuffer Origin;
-        public ComputeBuffer DistanceCull;
+        public ComputeBuffer Culling;
     }
 
 
@@ -70,7 +70,7 @@ public class DrawingGPUInstanceMeshArray : MonoBehaviour
         _buffer.Index2D = new ComputeBuffer(_count, Marshal.SizeOf(typeof(float2)), ComputeBufferType.Structured);
         _buffer.ArgBuffer = new ComputeBuffer(1, _args.Length * sizeof(uint), ComputeBufferType.IndirectArguments);
         _buffer.Origin = new ComputeBuffer(_count,Marshal.SizeOf(typeof(MeshArrayData)),ComputeBufferType.Structured);
-        _buffer.DistanceCull = new ComputeBuffer(_count,Marshal.SizeOf(typeof(MeshArrayData)),ComputeBufferType.Append);
+        _buffer.Culling = new ComputeBuffer(_count,Marshal.SizeOf(typeof(MeshArrayData)),ComputeBufferType.Append);
         _args[0] = (uint)mesh.GetIndexCount(0);
         _buffer.ArgBuffer.SetData(_args);
         
@@ -94,19 +94,19 @@ public class DrawingGPUInstanceMeshArray : MonoBehaviour
         
         computeShader.SetBuffer(_kernelOfComupteCulling,"Index2D",_buffer.Index2D);
         computeShader.SetBuffer(_kernelOfComupteCulling,"ArgBuffer",_buffer.ArgBuffer);
-        computeShader.SetBuffer(_kernelOfComupteCulling,"DistanceCullBuffer",_buffer.DistanceCull);
+        computeShader.SetBuffer(_kernelOfComupteCulling,"CullBuffer",_buffer.Culling);
         computeShader.SetBuffer(_kernelOfComupteCulling,"OringinalDataBuffer",_buffer.Origin);
 
-        Shader.SetGlobalBuffer(InstanceBuffer,_buffer.DistanceCull);
+        Shader.SetGlobalBuffer(InstanceBuffer,_buffer.Culling);
     }
     
     void Update()
     {
-        _buffer.DistanceCull.SetCounterValue(0);
+        _buffer.Culling.SetCounterValue(0);
         computeShader.SetFloat("_CullingDistacne",cullingDistacne);
         computeShader.SetVector("_CameraPosition",camera.gameObject.transform.position);
         computeShader.Dispatch(_kernelOfComupteCulling, _count / 16, 1, 1);
-        ComputeBuffer.CopyCount(_buffer.DistanceCull,_buffer.ArgBuffer,sizeof(uint));
+        ComputeBuffer.CopyCount(_buffer.Culling,_buffer.ArgBuffer,sizeof(uint));
         Graphics.DrawMeshInstancedIndirect(mesh,0,_material,_bounds,_buffer.ArgBuffer);
     }
 
@@ -115,7 +115,7 @@ public class DrawingGPUInstanceMeshArray : MonoBehaviour
         _buffer.Index2D.Dispose();
         _buffer.ArgBuffer.Dispose();
         _buffer.Origin.Dispose();
-        _buffer.DistanceCull.Dispose();
+        _buffer.Culling.Dispose();
         Destroy(_material);
     }
 

@@ -11,7 +11,7 @@ struct Thread
 
 RWStructuredBuffer<float2> Index2D;
 RWStructuredBuffer<MeshArrayData> OringinalDataBuffer;
-AppendStructuredBuffer<MeshArrayData> DistanceCullBuffer;
+AppendStructuredBuffer<MeshArrayData> CullBuffer;
 
 uint _Length;
 float _Interval;
@@ -58,7 +58,7 @@ void ComputeCullingUpdate(Thread thread)
         if((uint)id_2D.x%2 != 0 || (uint)id_2D.y%2 != 0)
             return;
     
-    DistanceCullBuffer.Append(OringinalDataBuffer[id]);
+    CullBuffer.Append(OringinalDataBuffer[id]);
 }
 
 

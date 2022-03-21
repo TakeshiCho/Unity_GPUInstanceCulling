@@ -154,7 +154,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   computeShader: {fileID: 7200000, guid: 02d0680d6ef7be8439f13de5024d956e, type: 3}
   camera: {fileID: 1687258584}
-  checkSingleMeshPosition: 1
+  checkSingleMeshPosition: 0
   length: 512
   interval: 1.2
   mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
