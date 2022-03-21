@@ -19,7 +19,7 @@ float _Interval;
 float _CullingDistacne;
 float4 _CameraPosition;
 float4 _CameraForward;
-float _CameraHaflDiagonalAngleDotProductor;
+float _CameraHaflDiagonalFovDotProductor;
 
 [numthreads(16,1,1)]
 void ComputeIndex2D(Thread thread)
@@ -51,7 +51,7 @@ void ComputeCullingUpdate(Thread thread)
     float3 pos = OringinalDataBuffer[id].Position;
 
     float forward = dot(normalize(pos - _CameraPosition.xyz),_CameraForward.xyz);
-    if (forward < _CameraHaflDiagonalAngleDotProductor)
+    if (forward < _CameraHaflDiagonalFovDotProductor)
         return;
     
     float distance = length(abs(pos - _CameraPosition.xyz));
