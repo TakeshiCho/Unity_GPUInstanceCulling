@@ -21,8 +21,8 @@ public class DrawingGPUInstanceMeshArray : MonoBehaviour
     public bool checkSingleMeshPosition;
 
     [Space]
-    public int length = 20;
-    public float interval = 2f;
+    public int length = 512;
+    public float interval = 1.5f;
 
     public Mesh mesh;
     public Shader shader;
@@ -86,7 +86,8 @@ public class DrawingGPUInstanceMeshArray : MonoBehaviour
         computeShader.SetInt("_Length",length);
         computeShader.SetFloat("_Interval",interval);
         computeShader.SetBool("_IsCheckPosition",checkSingleMeshPosition);
-        
+        computeShader.SetFloat("_CameraHaflDiagonalAngleDotProductor",_cameraHalfDiagonalAnglesDotProduct);
+
         computeShader.SetBuffer(_kernelOfComupteIndex2D,"Index2D",_buffer.Index2D);
         computeShader.Dispatch(_kernelOfComupteIndex2D, _count / 16, 1, 1);
         
@@ -107,6 +108,7 @@ public class DrawingGPUInstanceMeshArray : MonoBehaviour
         _buffer.Culling.SetCounterValue(0);
         computeShader.SetFloat("_CullingDistacne",cullingDistacne);
         computeShader.SetVector("_CameraPosition",camera.gameObject.transform.position);
+        computeShader.SetVector("_CameraForward",camera.transform.forward);
         computeShader.Dispatch(_kernelOfComupteCulling, _count / 16, 1, 1);
         ComputeBuffer.CopyCount(_buffer.Culling,_buffer.ArgBuffer,sizeof(uint));
         Graphics.DrawMeshInstancedIndirect(mesh,0,_material,_bounds,_buffer.ArgBuffer);
@@ -115,7 +117,7 @@ public class DrawingGPUInstanceMeshArray : MonoBehaviour
     float GetCameraHalfDiagonalAnglesDotProduct(Camera cam)
     {
         float ratio = (float)Screen.width / Screen.height;
-        float camVerticalFov = cam.fieldOfView * math.PI /180;
+        float camVerticalFov = cam.fieldOfView * Mathf.Deg2Rad;
         float camFarDistance = cam.farClipPlane;
         float camFarHeight = camFarDistance * math.tan(camVerticalFov * 0.5f) * 2;
         float camFarWidth = camFarHeight * ratio;

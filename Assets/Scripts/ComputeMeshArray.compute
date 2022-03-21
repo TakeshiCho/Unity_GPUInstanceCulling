@@ -13,11 +13,13 @@ RWStructuredBuffer<float2> Index2D;
 RWStructuredBuffer<MeshArrayData> OringinalDataBuffer;
 AppendStructuredBuffer<MeshArrayData> CullBuffer;
 
+bool _IsCheckPosition;
 uint _Length;
 float _Interval;
-float4 _CameraPosition;
 float _CullingDistacne;
-bool _IsCheckPosition;
+float4 _CameraPosition;
+float4 _CameraForward;
+float _CameraHaflDiagonalAngleDotProductor;
 
 [numthreads(16,1,1)]
 void ComputeIndex2D(Thread thread)
@@ -47,8 +49,12 @@ void ComputeCullingUpdate(Thread thread)
     uint id = thread.id;
     float2 id_2D = Index2D[id]; 
     float3 pos = OringinalDataBuffer[id].Position;
-    float distance = length(abs(pos - _CameraPosition.xyz));
+
+    float forward = dot(normalize(pos - _CameraPosition.xyz),_CameraForward.xyz);
+    if (forward < _CameraHaflDiagonalAngleDotProductor)
+        return;
     
+    float distance = length(abs(pos - _CameraPosition.xyz));
     if (distance > _CullingDistacne + 150)
         return;
     if(distance > _CullingDistacne + 50)
