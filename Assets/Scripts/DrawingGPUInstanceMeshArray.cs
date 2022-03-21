@@ -17,6 +17,7 @@ public class DrawingGPUInstanceMeshArray : MonoBehaviour
     private static readonly int InstanceBuffer = Shader.PropertyToID("_InstanceBuffer");
 
     public new Camera camera;
+    private float _cameraHalfDiagonalAnglesDotProduct;
     public bool checkSingleMeshPosition;
 
     [Space]
@@ -77,6 +78,7 @@ public class DrawingGPUInstanceMeshArray : MonoBehaviour
         _kernelOfComupteIndex2D = computeShader.FindKernel("ComputeIndex2D");
         _kernelOfComputeMeshData = computeShader.FindKernel("ComputeMeshData");
         _kernelOfComupteCulling = computeShader.FindKernel("ComputeCullingUpdate");
+        _cameraHalfDiagonalAnglesDotProduct = GetCameraHalfDiagonalAnglesDotProduct(camera);
     }
 
     private void Start()
@@ -108,6 +110,20 @@ public class DrawingGPUInstanceMeshArray : MonoBehaviour
         computeShader.Dispatch(_kernelOfComupteCulling, _count / 16, 1, 1);
         ComputeBuffer.CopyCount(_buffer.Culling,_buffer.ArgBuffer,sizeof(uint));
         Graphics.DrawMeshInstancedIndirect(mesh,0,_material,_bounds,_buffer.ArgBuffer);
+    }
+
+    float GetCameraHalfDiagonalAnglesDotProduct(Camera cam)
+    {
+        float ratio = (float)Screen.width / Screen.height;
+        float camVerticalFov = cam.fieldOfView * math.PI /180;
+        float camFarDistance = cam.farClipPlane;
+        float camFarHeight = camFarDistance * math.tan(camVerticalFov * 0.5f) * 2;
+        float camFarWidth = camFarHeight * ratio;
+        float camFarDiagonal = math.sqrt(camFarHeight * camFarHeight + camFarWidth * camFarWidth);
+        float camFarDiagonalHalf = camFarDiagonal * 0.5f;
+        float camHypotenuse = math.sqrt(camFarDistance * camFarDistance + camFarDiagonalHalf * camFarDiagonalHalf);
+        float coshalfCamDiagonalAngle = camFarDistance / camHypotenuse;
+        return coshalfCamDiagonalAngle;
     }
 
     private void OnDestroy()
