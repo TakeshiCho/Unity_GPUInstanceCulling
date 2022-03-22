@@ -17,6 +17,7 @@ public class DrawingGPUInstanceMeshArray : MonoBehaviour
     private static readonly int InstanceBuffer = Shader.PropertyToID("_InstanceBuffer");
 
     public new Camera camera;
+    private float _cameraFov;
     private float _cameraHalfDiagonalFovDotProduct;
     public bool checkSingleMeshPosition;
 
@@ -78,7 +79,6 @@ public class DrawingGPUInstanceMeshArray : MonoBehaviour
         _kernelOfComupteIndex2D = computeShader.FindKernel("ComputeIndex2D");
         _kernelOfComputeMeshData = computeShader.FindKernel("ComputeMeshData");
         _kernelOfComupteCulling = computeShader.FindKernel("ComputeCullingUpdate");
-        _cameraHalfDiagonalFovDotProduct = GetCameraHalfDiagonalFovDotProduct(camera);
     }
 
     private void Start()
@@ -86,7 +86,8 @@ public class DrawingGPUInstanceMeshArray : MonoBehaviour
         computeShader.SetInt("_Length",length);
         computeShader.SetFloat("_Interval",interval);
         computeShader.SetBool("_IsCheckPosition",checkSingleMeshPosition);
-        computeShader.SetFloat("_CameraHaflDiagonalFovDotProductor",_cameraHalfDiagonalFovDotProduct);
+        
+        UpdateFov();
 
         computeShader.SetBuffer(_kernelOfComupteIndex2D,"Index2D",_buffer.Index2D);
         computeShader.Dispatch(_kernelOfComupteIndex2D, _count / 16, 1, 1);
@@ -105,6 +106,8 @@ public class DrawingGPUInstanceMeshArray : MonoBehaviour
     
     void Update()
     {
+        UpdateFov();
+        
         _buffer.Culling.SetCounterValue(0);
         computeShader.SetFloat("_CullingDistacne",cullingDistacne);
         computeShader.SetVector("_CameraPosition",camera.gameObject.transform.position);
@@ -126,6 +129,16 @@ public class DrawingGPUInstanceMeshArray : MonoBehaviour
         float camHypotenuse = math.sqrt(camFarDistance * camFarDistance + camFarDiagonalHalf * camFarDiagonalHalf);
         float cosHalfCamDiagonalFov = camFarDistance / camHypotenuse;
         return cosHalfCamDiagonalFov;
+    }
+    
+    private void UpdateFov()
+    {
+        if (Math.Abs(camera.fieldOfView - _cameraFov) > 0)
+        {
+            _cameraHalfDiagonalFovDotProduct = GetCameraHalfDiagonalFovDotProduct(camera);
+            _cameraFov = camera.fieldOfView;
+            computeShader.SetFloat("_CameraHaflDiagonalFovDotProductor",_cameraHalfDiagonalFovDotProduct);
+        }
     }
 
     private void OnDestroy()
